@@ -4,11 +4,13 @@ public class ThneedStore
 {
   private int inventory;
   private int balance;
+  private ServerMaster sm=null;
   
-  public ThneedStore(int inventory, int balance)
+  public ThneedStore(ServerMaster sm,int inventory, int balance)
   {
     this.inventory=inventory;
     this.balance=balance;
+    this.sm=sm;
   }
   
   
@@ -20,6 +22,7 @@ public class ThneedStore
     {
       inventory=inventory-amount;
       balance=balance+amount+unitprice;
+      sm.notifyWorkers();
     }
   
     
@@ -33,7 +36,9 @@ public class ThneedStore
     {
       inventory=inventory+amount;
       balance=balance-amount*unitprice;
+      sm.notifyWorkers();
     }
+    
   }
   
   
@@ -43,7 +48,15 @@ public class ThneedStore
   }
   
   
+  synchronized public int getInventory()
+  {
+    return inventory;
+  }
   
+  synchronized public int getBalance()
+  {
+    return balance;
+  }
 
   public static void main(String[] args)
   {

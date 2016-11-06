@@ -8,14 +8,16 @@ import java.util.Scanner;
 
 public class ServerWorker extends Thread
 {
+  private ServerMaster sm;
   private ThneedStore thstore;
   private Socket socket;
   private boolean flag = true;
   private Scanner sc=null;
   private PrintStream ps=null;
 
-  public ServerWorker(ThneedStore thstore, Socket socket) throws Exception
+  public ServerWorker(ServerMaster sm,ThneedStore thstore, Socket socket) throws Exception
   {
+    this.sm=sm;
     this.thstore = thstore;
     this.socket = socket;
    
@@ -27,14 +29,18 @@ public class ServerWorker extends Thread
   }
 
   @Override
-  public void run()
+  public void run() 
   {
     // TODO Auto-generated method stub
     // BufferedInputStream bf=null;
  
     while (flag)
     {
-      String command = sc.next();
+      String command=null;
+     
+      try
+      {
+        command= sc.next();
       if (command.equals("buy:"))
       {
         String amountInString = sc.next();
@@ -43,25 +49,54 @@ public class ServerWorker extends Thread
         int up = Integer.parseInt(upInString);
         System.out.println("client is buying "+amount+" "+up);
        
-        thstore.buy(amount, up);
+        boolean result=thstore.buy(amount, up);
+        if(!result)
+        {
+          ps.println("Thneed store denied your request!");
+        }
+        else
+        {
+          ps.println("Transaction successful!");
+        }
         
 
       } else if (command.equals("sell:"))
       {
-
+        String amountInString = sc.next();
+        String upInString = sc.next();
+        int amount = Integer.parseInt(amountInString);
+        int up = Integer.parseInt(upInString);
+        System.out.println("client is selling "+amount+" "+up);
+       
+        boolean result=thstore.sell(amount, up);    
+        if(!result)
+        {
+          ps.println("Thneed store denied your request!");
+        }
+        else
+        {
+          ps.println("Transaction successful!");
+        }
+        
       } else
       {
         System.out.println("Wrong input for the serverworker!");
       }
-
+      
+      }
+      catch(Exception e)
+      {
+         
+         sm.removeWorker(this);
+         flag=false;
+      }
     }
-
   }
 
   public void notifyClient()
   {
     ps.println("Store information updated!");
-    ps.println("status:"+thstore.getInventory()+ " "+ thstore.getBalance());  
+    ps.println("status: "+thstore.getInventory()+ " "+ thstore.getBalance());  
   }
 
   public static void main(String[] args)

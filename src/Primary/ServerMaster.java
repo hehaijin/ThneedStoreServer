@@ -12,8 +12,7 @@ public class ServerMaster
   
   public ServerMaster()
   {
-    thstore=new ThneedStore(this,1000,1000);
-       
+    thstore=new ThneedStore(this,1000,1000);       
   }
   
   
@@ -34,11 +33,20 @@ public class ServerMaster
     while(flag)
     {
       Socket s=ss.accept();
-      ServerWorker sw=new ServerWorker(thstore,s);
+      ServerWorker sw=new ServerWorker(this,thstore,s);
       workers.add(sw);
       System.out.println("a new worker is generated");
+      System.out.println("Now total "+workers.size()+ " workers.");
+      
     }
    ss.close();
+  }
+  
+  public void removeWorker(ServerWorker sw)
+  {
+    workers.remove(sw);
+    System.out.println("a worker is removed");
+    System.out.println(workers.size()+ " works left.");
   }
   
   

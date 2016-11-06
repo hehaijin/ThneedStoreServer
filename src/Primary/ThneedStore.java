@@ -14,50 +14,58 @@ public class ThneedStore
   }
   
   
-  synchronized public void sell(int amount, int unitprice)
+  synchronized public boolean sell(int amount, int unitprice)
   {
     if(amount > inventory)
+      {
       System.out.println("not enough inventory");
+      return false;
+      }
     else
     {
       inventory=inventory-amount;
-      balance=balance+amount+unitprice;
+      balance=balance+amount*unitprice;
       sm.notifyWorkers();
     }
   
-    
+    return true;
   }
   
-  synchronized public void buy(int amount, int unitprice)
+  synchronized public boolean buy(int amount, int unitprice)
   {
     if(balance < amount*unitprice)
+    {
       System.out.println("not enough balance");
+      return false;
+    }
+    
     else
     {
       inventory=inventory+amount;
       balance=balance-amount*unitprice;
       sm.notifyWorkers();
     }
-    
+    return true;
   }
   
   
-  synchronized public void setInventory(int inventory)
+   public void setInventory(int inventory)
   {
     this.inventory=inventory;
   }
   
   
-  synchronized public int getInventory()
+   public int getInventory()
   {
     return inventory;
   }
   
-  synchronized public int getBalance()
+   public int getBalance()
   {
     return balance;
   }
 
+  
   public static void main(String[] args)
   {
     // TODO Auto-generated method stub

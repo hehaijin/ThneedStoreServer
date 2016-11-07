@@ -4,18 +4,29 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.LinkedList;
 
+/**
+ * the main class for the Thneed store
+ * @author Haijin He
+ *
+ */
 public class ServerMaster
 {
+  int port;
   private ThneedStore thstore;
   private LinkedList<ServerWorker> workers=new LinkedList<>();
   private boolean flag=true;
+  long time=0;
   
-  public ServerMaster()
+  public ServerMaster(int port)
   {
-    thstore=new ThneedStore(this,1000,1000);       
+    thstore=new ThneedStore(this,1000,1000); 
+    this.time=System.currentTimeMillis();
+    this.port=port;
   }
   
-  
+  /**
+   * notify all worker threads of store status change.
+   */
   public void notifyWorkers()
   {
     for(ServerWorker sw: workers)
@@ -24,19 +35,25 @@ public class ServerMaster
     }
   }
   
+  /**
+   * this method starts the server socket and listen for client connection.
+   * @throws Exception
+   */
   public void init() throws Exception
   {
     
-    ServerSocket ss=new ServerSocket(6666);
-    System.out.println("Server socket established.");
+    ServerSocket ss=new ServerSocket(port);
+    System.out.println("Server established.");
     
     while(flag)
     {
       Socket s=ss.accept();
       ServerWorker sw=new ServerWorker(this,thstore,s);
       workers.add(sw);
-      System.out.println("a new worker is generated");
+      sw.setIndex(workers.indexOf(sw));
+      System.out.println("A new client is connected.");
       System.out.println("Now total "+workers.size()+ " workers.");
+      
       
     }
    ss.close();
@@ -59,7 +76,8 @@ public class ServerMaster
   public static void main(String[] args) throws Exception
   {
     // TODO Auto-generated method stub
-    ServerMaster sm=new ServerMaster();
+    int port=Integer.parseInt(args[0]);
+    ServerMaster sm=new ServerMaster(port);
     sm.init();
     
     

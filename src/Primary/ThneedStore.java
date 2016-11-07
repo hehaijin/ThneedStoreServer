@@ -1,12 +1,23 @@
 package Primary;
 
+/**
+ * Thneed store class. 
+ * @author Haijin He
+ *
+ */
 public class ThneedStore
 {
   private int inventory;
-  private int balance;
+  private double balance;
   private ServerMaster sm=null;
   
-  public ThneedStore(ServerMaster sm,int inventory, int balance)
+  /**
+   * constructor 
+   * @param sm
+   * @param inventory
+   * @param balance
+   */
+  public ThneedStore(ServerMaster sm,int inventory, double balance)
   {
     this.inventory=inventory;
     this.balance=balance;
@@ -14,7 +25,7 @@ public class ThneedStore
   }
   
   
-  synchronized public boolean sell(int amount, int unitprice)
+  synchronized public boolean sell(int amount, double unitprice)
   {
     if(amount > inventory)
       {
@@ -31,7 +42,7 @@ public class ThneedStore
     return true;
   }
   
-  synchronized public boolean buy(int amount, int unitprice)
+  synchronized public boolean buy(int amount, double unitprice)
   {
     if(balance < amount*unitprice)
     {
@@ -48,19 +59,14 @@ public class ThneedStore
     return true;
   }
   
-  
-   public void setInventory(int inventory)
-  {
-    this.inventory=inventory;
-  }
-  
+ 
   
    public int getInventory()
   {
     return inventory;
   }
   
-   public int getBalance()
+   public double getBalance()
   {
     return balance;
   }
